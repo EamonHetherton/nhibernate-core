@@ -110,7 +110,7 @@ namespace NHibernate.SqlCommand
 			{
 				string firstParameterId = specification.GetIdsForBackTrack(factory).First();
 				int[] effectiveParameterLocations = SqlQueryParametersList.GetEffectiveParameterLocations(firstParameterId).ToArray();
-				if (effectiveParameterLocations.Length > 0)
+				if (effectiveParameterLocations.Length > 0) // Parameters previously present might have been removed from the SQL at a later point.
 				{
 					int firstParamNameIndex = effectiveParameterLocations[0] + singleSqlParametersOffset;
 					foreach (int location in effectiveParameterLocations)

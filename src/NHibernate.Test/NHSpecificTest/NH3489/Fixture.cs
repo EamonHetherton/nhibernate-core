@@ -106,7 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3489
 		}
 
 		[Test]
-		public void YourTestName()
+		public void PerformanceTest()
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			using (ISession session = OpenSession())

@@ -171,6 +171,8 @@ namespace NHibernate.Cfg
 		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
 		public const string OrderInserts = "order_inserts";
 
+		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
+
 		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;

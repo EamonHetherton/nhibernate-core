@@ -7,6 +7,7 @@ using NHibernate.Connection;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
+using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg
@@ -125,6 +126,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public ILinqToHqlGeneratorsRegistry LinqToHqlGeneratorsRegistry { get; internal set; }
 
+		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
+		
 		#endregion
 	}
 }

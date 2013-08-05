@@ -702,6 +702,10 @@
     <Compile Include="NHSpecificTest\NH3571\Product.cs" />
     <Compile Include="NHSpecificTest\NH3459\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
+    <Compile Include="NHSpecificTest\NH3506\BaseClass.cs" />
+    <Compile Include="NHSpecificTest\NH3506\Department.cs" />
+    <Compile Include="NHSpecificTest\NH3506\Employee.cs" />
+    <Compile Include="NHSpecificTest\NH3506\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2692\Model.cs" />
     <Compile Include="NHSpecificTest\NH2772\Model.cs" />
@@ -3036,6 +3040,7 @@
     <EmbeddedResource Include="Unionsubclass\DatabaseKeyword.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1082\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3571\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3506\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>

@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
+using System.Linq;
 using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Proxy;
 using NUnit.Framework;
 using SharpTestsEx;
 
-namespace NHibernate.Test.PolymorphicGetAndLoad
+namespace NHibernate.Test.Polymorphy
 {
 	public class PolymorphicGetAndLoadTest: TestCase
 	{
@@ -16,7 +18,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 
 		protected override IList Mappings
 		{
-			get { return new[] { "PolymorphicGetAndLoad.Mappings.hbm.xml" }; }
+			get { return new[] { "Polymorphy.Mappings.hbm.xml" }; }
 		}
 
 		public class ScenarioWithA : IDisposable
@@ -58,7 +60,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			public ScenarioWithB(ISessionFactory factory)
 			{
 				this.factory = factory;
-				b = new B { Name = "Patrick", Occupation = "hincha pelotas (en el buen sentido), but good candidate to be committer."};
+				b = new B { Name = "Patrick", Occupation = "hincha pelotas (en el buen sentido), but good candidate to be committer." };
 				using (var s = factory.OpenSession())
 				{
 					s.Save(b);
@@ -67,6 +69,37 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			}
 
 			public B B
+			{
+				get { return b; }
+			}
+
+			public void Dispose()
+			{
+				using (var s = factory.OpenSession())
+				{
+					s.Delete(b);
+					s.Flush();
+				}
+			}
+		}
+
+		public class ScenarioWithGraphB : IDisposable
+		{
+			private readonly ISessionFactory factory;
+			private readonly GraphB b;
+
+			public ScenarioWithGraphB(ISessionFactory factory)
+			{
+				this.factory = factory;
+				b = new GraphB { Name = "Patrick" };
+				using (var s = factory.OpenSession())
+				{
+					s.Save(b);
+					s.Flush();
+				}
+			}
+
+			public GraphB B
 			{
 				get { return b; }
 			}

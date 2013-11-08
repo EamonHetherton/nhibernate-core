@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using NHibernate.Event;
 using NHibernate.Hql;
@@ -93,62 +94,54 @@ namespace NHibernate.Engine.Query
 
 			bool hasLimit = queryParameters.RowSelection != null && queryParameters.RowSelection.DefinesLimits;
 			bool needsLimit = hasLimit && Translators.Length > 1;
-			QueryParameters queryParametersToUse;
+
+			IList combinedResults = results ?? new List<object>();
+
+            IEnumerable<object> items = GetResultSets(queryParameters, session, needsLimit).SelectMany(l => l.Cast<object>());
+
 			if (needsLimit)
 			{
 				Log.Warn("firstResult/maxResults specified on polymorphic query; applying in memory!");
-				RowSelection selection = new RowSelection();
-				selection.FetchSize = queryParameters.RowSelection.FetchSize;
-				selection.Timeout = queryParameters.RowSelection.Timeout;
-				queryParametersToUse = queryParameters.CreateCopyUsing(selection);
-			}
-			else
-			{
-				queryParametersToUse = queryParameters;
+                if (queryParameters.RowSelection.FirstRow != RowSelection.NoValue)
+                    items = items.Skip(queryParameters.RowSelection.FirstRow);
+
+                if (queryParameters.RowSelection.MaxRows != RowSelection.NoValue)
+                    items = items.Take(queryParameters.RowSelection.MaxRows);
 			}
 
-			IList combinedResults = results ?? new List<object>();
-			IdentitySet distinction = new IdentitySet();
-			int includedCount = -1;
-			for (int i = 0; i < Translators.Length; i++)
-			{
-				IList tmp = Translators[i].List(session, queryParametersToUse);
-				if (needsLimit)
-				{
-					// NOTE : firstRow is zero-based
-					int first = queryParameters.RowSelection.FirstRow == RowSelection.NoValue
-												? 0
-												: queryParameters.RowSelection.FirstRow;
-
-					int max = queryParameters.RowSelection.MaxRows == RowSelection.NoValue
-											? RowSelection.NoValue
-											: queryParameters.RowSelection.MaxRows;
-
-					int size = tmp.Count;
-					for (int x = 0; x < size; x++)
-					{
-						object result = tmp[x];
-						if (distinction.Add(result))
-						{
-							continue;
-						}
-						includedCount++;
-						if (includedCount < first)
-						{
-							continue;
-						}
-						combinedResults.Add(result);
-						if (max >= 0 && includedCount > max)
-						{
-							// break the outer loop !!!
-							return;
-						}
-					}
-				}
-				else
-					ArrayHelper.AddAll(combinedResults, tmp);
-			}
+            ArrayHelper.AddAll(combinedResults, items);
 		}
+
+        private QueryParameters GetModifiedQueryParametersForInMemoryPaging(QueryParameters originalParameters, int alreadyTraversedRecords)
+        {
+            RowSelection selection = new RowSelection();
+            selection.FetchSize = originalParameters.RowSelection.FetchSize;
+            selection.Timeout = originalParameters.RowSelection.Timeout;
+            if (originalParameters.RowSelection.MaxRows != RowSelection.NoValue)
+            {
+                selection.MaxRows = Math.Max(0, (originalParameters.RowSelection.FirstRow == RowSelection.NoValue ? 0 : originalParameters.RowSelection.FirstRow) 
+                                                + originalParameters.RowSelection.MaxRows
+                                                - alreadyTraversedRecords);
+            }
+            return originalParameters.CreateCopyUsing(selection);
+        }
+
+        private IEnumerable<IList> GetResultSets(QueryParameters queryParameters, ISessionImplementor session, bool needsInMemoryPaging)
+        {
+            Func<int, QueryParameters> getQueryParametersToUse = alreadyTraversedRecords => queryParameters;
+            if (needsInMemoryPaging)
+            {
+                getQueryParametersToUse = alreadyTraversedRecords => GetModifiedQueryParametersForInMemoryPaging(queryParameters, alreadyTraversedRecords);
+            }
+
+            int traversedRecords = 0;
+            for (int i = 0; i < Translators.Length; i++)
+            {
+                IList tmp = Translators[i].List(session, getQueryParametersToUse(traversedRecords));
+                traversedRecords += tmp.Count;
+                yield return tmp;
+            }
+        }
 
 		public IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session)
 		{

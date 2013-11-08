@@ -1,4 +1,4 @@
-namespace NHibernate.Test.PolymorphicGetAndLoad
+namespace NHibernate.Test.Polymorphy
 {
 	public class A: INamed
 	{

@@ -44,6 +44,7 @@ namespace NHibernate.Loader.Criteria
 
 		private readonly ICollection<IParameterSpecification> collectedParameterSpecifications;
 		private readonly ICollection<NamedParameter> namedParameters;
+		private readonly ISet<string> subQuerySpaces = new HashSet<string>();
 
 		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
 									   string rootSQLAlias, ICriteriaQuery outerQuery)
@@ -71,6 +72,7 @@ namespace NHibernate.Loader.Criteria
 			CreateCriteriaEntityNameMap();
 			CreateCriteriaCollectionPersisters();
 			CreateCriteriaSQLAliasMap();
+			CreateSubQuerySpaces();
 		}
 
 		[CLSCompliant(false)] // TODO: Why does this cause a problem in 1.1
@@ -92,6 +94,9 @@ namespace NHibernate.Loader.Criteria
 			{
 				result.UnionWith(collectionPersister.CollectionSpaces);
 			}
+
+			result.UnionWith(subQuerySpaces);
+
 			return result;
 		}
 
@@ -838,5 +843,37 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		#endregion
+
+		private void CreateSubQuerySpaces()
+		{
+
+			var subQueries = new List<CriteriaImpl>();
+			GetSubQueries(rootCriteria, subQueries);
+
+			foreach (var criteriaImpl in subQueries)
+			{
+				//The RootSqlAlias is not relevant, since we're only retreiving the query spaces
+				var translator = new CriteriaQueryTranslator(sessionFactory, criteriaImpl, criteriaImpl.EntityOrClassName, RootSqlAlias);
+				subQuerySpaces.UnionWith(translator.GetQuerySpaces());
+			}
+
+		}
+
+		private void GetSubQueries(CriteriaImpl criteriaImpl, List<CriteriaImpl> subQueries)
+		{
+			var subQueryExpressions =
+				criteriaImpl.IterateExpressionEntries().Select(x => x.Criterion).OfType<SubqueryExpression>().ToList();
+
+			foreach (var subqueryExpression in subQueryExpressions)
+			{
+				var impl = subqueryExpression.Criteria as CriteriaImpl;
+				if (impl != null)
+				{
+					subQueries.Add(impl);
+					GetSubQueries(impl, subQueries);
+				}
+			}
+
+		}
 	}
 }

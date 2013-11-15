@@ -847,8 +847,12 @@ namespace NHibernate.Loader.Criteria
 		private void CreateSubQuerySpaces()
 		{
 
-			var subQueries = new List<CriteriaImpl>();
-			GetSubQueries(rootCriteria, subQueries);
+			var subQueries =
+				rootCriteria.IterateExpressionEntries()
+				            .Select(x => x.Criterion)
+				            .OfType<SubqueryExpression>()
+				            .Select(x => x.Criteria)
+				            .OfType<CriteriaImpl>();
 
 			foreach (var criteriaImpl in subQueries)
 			{
@@ -859,21 +863,5 @@ namespace NHibernate.Loader.Criteria
 
 		}
 
-		private void GetSubQueries(CriteriaImpl criteriaImpl, List<CriteriaImpl> subQueries)
-		{
-			var subQueryExpressions =
-				criteriaImpl.IterateExpressionEntries().Select(x => x.Criterion).OfType<SubqueryExpression>().ToList();
-
-			foreach (var subqueryExpression in subQueryExpressions)
-			{
-				var impl = subqueryExpression.Criteria as CriteriaImpl;
-				if (impl != null)
-				{
-					subQueries.Add(impl);
-					GetSubQueries(impl, subQueries);
-				}
-			}
-
-		}
 	}
 }

@@ -38,8 +38,7 @@ namespace NHibernate.Mapping
 
 		public bool IsLogicalOneToOne
 		{
-			get
-			{ return isLogicalOneToOne; }
+			get { return isLogicalOneToOne; }
 			set { isLogicalOneToOne = value; }
 		}
 

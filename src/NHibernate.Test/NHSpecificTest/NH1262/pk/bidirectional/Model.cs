@@ -2,8 +2,8 @@
 {
 	public class Employee
 	{
-		public virtual long id { get; set; }
-		public virtual EmployeeInfo info { get; set; }
+		public virtual long Id { get; set; }
+		public virtual EmployeeInfo Info { get; set; }
 
 		public Employee()
 		{
@@ -13,8 +13,8 @@
 
 	public class EmployeeInfo
 	{
-		public virtual long id { get; set; }
-		public virtual Employee employee { get; set; }
+		public virtual long Id { get; set; }
+		public virtual Employee EmployeeDetails { get; set; }
 
 		public EmployeeInfo()
 		{
@@ -23,7 +23,7 @@
 
 		public EmployeeInfo(Employee employee)
 		{
-			this.employee = employee;
+			this.EmployeeDetails = employee;
 		}
 
 	}	

@@ -17,8 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.pk.unidirectional
 			{
 				var emp = new Employee();
 				s.Save(emp);
-				var info = new EmployeeInfo(emp.id);
-				emp.info = info;
+				var info = new EmployeeInfo(emp.Id);
+				emp.Info = info;
 				
 				t.Commit();
 			}
@@ -54,9 +54,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.pk.unidirectional
 				Assert.AreEqual(1, empList.Count);
 
 				Employee emp = empList[0];
-				Assert.NotNull(emp.info);
+				Assert.NotNull(emp.Info);
 				
-				var empAndInfoList = s.CreateQuery( "from Employee e, EmployeeInfo i where e.info = i" ).List();
+				var empAndInfoList = s.CreateQuery("from Employee e, EmployeeInfo i where e.Info = i").List();
 				Assert.AreEqual(1, empAndInfoList.Count);
 
 				var result = (object[])empAndInfoList[0];
@@ -64,10 +64,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.pk.unidirectional
 				emp = result[0] as Employee;
 
 				Assert.NotNull(result[1]);
-				Assert.AreSame(emp.info, result[1]);
+				Assert.AreSame(emp.Info, result[1]);
 
-				empId = emp.id;
-				emp.info = null;
+				empId = emp.Id;
+				emp.Info = null;
 
 				tx.Commit();
 			}
@@ -76,10 +76,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.pk.unidirectional
 			using (var tx = s.BeginTransaction())
 			{
 				var emp = s.Get<Employee>(empId);
-				Assert.IsNull(emp.info);
+				Assert.IsNull(emp.Info);
 
-				var empInfoList = s.CreateQuery( "from EmployeeInfo" ).List<EmployeeInfo>();
-				Assert.AreEqual( 0, empInfoList.Count);
+				var empInfoList = s.CreateQuery("from EmployeeInfo").List<EmployeeInfo>();
+				Assert.AreEqual(0, empInfoList.Count);
 
 				var empList = s.CreateQuery("from Employee").List<Employee>();
 				Assert.AreEqual(1, empList.Count);

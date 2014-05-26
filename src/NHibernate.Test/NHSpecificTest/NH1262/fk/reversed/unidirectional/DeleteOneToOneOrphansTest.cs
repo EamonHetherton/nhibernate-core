@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.unidirectional
 			using (var t = s.BeginTransaction())
 			{
 				var emp = new Employee();
-				emp.info = new EmployeeInfo();
+				emp.Info = new EmployeeInfo();
 
 				s.Save(emp);
 				t.Commit();
@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.unidirectional
 		}
 
 		[Test]
-		public void testOrphanedWhileManaged()
+		public void TestOrphanedWhileManaged()
 		{
 			long empId = 0;
 
@@ -51,10 +51,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.unidirectional
 				Assert.AreEqual(1, empList.Count);
 
 				Employee emp = empList[0];
-				Assert.NotNull(emp.info);
+				Assert.NotNull(emp.Info);
 
-				empId = emp.id;
-				emp.info = null;
+				empId = emp.Id;
+				emp.Info = null;
 
 				tx.Commit();
 
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.unidirectional
 			using (var tx = s.BeginTransaction())
 			{
 				var emp = s.Get<Employee>(empId);
-				Assert.IsNull(emp.info);
+				Assert.IsNull(emp.Info);
 				var empInfoList = s.CreateQuery("from EmployeeInfo").List<EmployeeInfo>();
 				Assert.AreEqual(0, empInfoList.Count);
 
@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.unidirectional
 
 		[Test]
 		//@FailureExpected( jiraKey = "unknown" )
-		public void testOrphanedWhileDetached()
+		public void TestOrphanedWhileDetached()
 		{
 			long empId = 0;
 			Employee emp;
@@ -93,9 +93,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.unidirectional
 				Assert.AreEqual(1, empList.Count);
 
 				emp = empList[0];
-				Assert.NotNull(emp.info);
+				Assert.NotNull(emp.Info);
 
-				empId = emp.id;
+				empId = emp.Id;
 
 				tx.Commit();
 
@@ -106,7 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.unidirectional
 			using (var tx = s.BeginTransaction())
 			{
 				s.Lock(emp, LockMode.None);
-				emp.info = null;
+				emp.Info = null;
 				//save using the new session (this used to work prior to 3.5.x)
 				s.SaveOrUpdate(emp);
 				tx.Commit();
@@ -116,8 +116,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.unidirectional
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				emp = s.Get<Employee>(emp.id);
-				Assert.IsNull(emp.info);
+				emp = s.Get<Employee>(emp.Id);
+				Assert.IsNull(emp.Info);
 
 				var empInfoList = s.CreateQuery("from EmployeeInfo").List<EmployeeInfo>();
 				Assert.AreEqual(0, empInfoList.Count);

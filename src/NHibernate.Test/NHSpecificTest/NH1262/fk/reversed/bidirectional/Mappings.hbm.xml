@@ -4,22 +4,22 @@
 				   assembly="NHibernate.Test">
 
     <class name="Employee">
-        <id name="id" type="long" column="id">
+        <id name="Id" type="long" column="Id">
             <generator class="increment" />
         </id>
-         <many-to-one name="info"
-                    column="info_id"
+         <many-to-one name="Info"
+                    column="Info_id"
                     unique="true"
                     cascade="all,delete-orphan"/>
     </class>
 
     <class name="EmployeeInfo">
-        <id name="id" type="long" column="id">
+        <id name="Id" type="long" column="Id">
             <generator class="increment" />
         </id>
-        <one-to-one name="employee"
-                   property-ref="info"
-                   class="Employee" />
+        <one-to-one name="EmployeeDetails"
+                    property-ref="Info"
+                    class="Employee" />
     </class>
 
 </hibernate-mapping>

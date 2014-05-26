@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.bidirectional
 			using (var t = s.BeginTransaction())
 			{
 				var emp = new Employee();
-				emp.info = new EmployeeInfo(emp);
+				emp.Info = new EmployeeInfo(emp);
 
 				s.Save(emp);
 				t.Commit();
@@ -38,24 +38,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.bidirectional
 		}
 
 		[Test]
-		public void testOrphanedWhileManaged()
+		public void TestOrphanedWhileManaged()
 		{
 			long empId = 0;
 
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var empInfoList = s.CreateQuery( "from EmployeeInfo" ).List<EmployeeInfo>();
+				var empInfoList = s.CreateQuery("from EmployeeInfo").List<EmployeeInfo>();
 				Assert.AreEqual(1, empInfoList.Count);
 
 				var empList = s.CreateQuery("from Employee").List<Employee>();
 				Assert.AreEqual(1, empList.Count);
 
 				Employee emp = empList[0];
-				Assert.NotNull(emp.info );
+				Assert.NotNull(emp.Info );
 				
-				empId = emp.id;
-				emp.info = null;
+				empId = emp.Id;
+				emp.Info = null;
 				
 				tx.Commit();
 			}
@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.reversed.bidirectional
 			using (var tx = s.BeginTransaction())
 			{
 				var emp = s.Get<Employee>(empId);
-				Assert.IsNull(emp.info);
+				Assert.IsNull(emp.Info);
 				var empInfoList = s.CreateQuery("from EmployeeInfo").List<EmployeeInfo>();
 				Assert.AreEqual( 0, empInfoList.Count);
 

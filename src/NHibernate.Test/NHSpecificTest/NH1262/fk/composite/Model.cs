@@ -4,8 +4,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.composite
 {
 	public class Employee
 	{
-		public virtual long id { get; set; }
-		public virtual EmployeeInfo info { get; set; }
+		public virtual long Id { get; set; }
+		public virtual EmployeeInfo Info { get; set; }
 
 		public Employee()
 		{
@@ -15,20 +15,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.composite
 
 	public class EmployeeInfo
 	{
-		public class Id
+		public class Identifier
 		{
-			public virtual long companyId { get; set; }
-			public virtual long personId { get; set; }
+			public virtual long CompanyId { get; set; }
+			public virtual long PersonId { get; set; }
 
-			public Id()
+			public Identifier()
 			{
 
 			}
 
-			public Id(long companyId, long personId)
+			public Identifier(long companyId, long personId)
 			{
-				this.companyId = companyId;
-				this.personId = personId;
+				this.CompanyId = companyId;
+				this.PersonId = personId;
 			}
 
 
@@ -48,21 +48,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.composite
 					return false;
 				}
 
-				var id = o as Id;
+				var id = o as Identifier;
 
-				return companyId.Equals(id.companyId)
-						&& personId.Equals(id.personId);
+				return CompanyId.Equals(id.CompanyId)
+						&& PersonId.Equals(id.PersonId);
 
 			}
 
 			public override int GetHashCode()
 			{
-				return (31 * companyId.GetHashCode()) + personId.GetHashCode();
+				return (31 * CompanyId.GetHashCode()) + PersonId.GetHashCode();
 			}
 		}
 
-		public virtual Id id { get; set; }
-		public virtual Employee employee { get; set; }
+		public virtual Identifier Id { get; set; }
+		public virtual Employee Employee { get; set; }
 
 		public EmployeeInfo()
 		{
@@ -71,12 +71,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.composite
 
 		public EmployeeInfo(long companyId, long personId)
 		{
-			this.id = new Id(companyId, personId);
+			this.Id = new Identifier(companyId, personId);
 		}
 
-		public EmployeeInfo(Id id)
+		public EmployeeInfo(Identifier id)
 		{
-			this.id = id;
+			this.Id = id;
 		}
 	}
 

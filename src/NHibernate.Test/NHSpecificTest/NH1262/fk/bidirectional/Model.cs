@@ -3,8 +3,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.bidirectional
 {
 	public class Employee
 	{
-		public virtual long id { get; set; }
-		public virtual EmployeeInfo info { get; set; }
+		public virtual long Id { get; set; }
+		public virtual EmployeeInfo Info { get; set; }
 
 		public Employee()
 		{
@@ -14,8 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.bidirectional
 
 	public class EmployeeInfo
 	{
-		public virtual long id { get; set; }
-		public virtual Employee employee { get; set; }
+		public virtual long Id { get; set; }
+		public virtual Employee EmployeeDetails { get; set; }
 
 		public EmployeeInfo()
 		{
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1262.fk.bidirectional
 
 		public EmployeeInfo(Employee emp)
 		{
-			employee = emp;
+			EmployeeDetails = emp;
 		}
 	}
 }

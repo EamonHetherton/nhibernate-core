@@ -4,19 +4,22 @@
 				   assembly="NHibernate.Test">
 
     <class name="Employee">
-        <id name="id" type="long" column="id">
+        <id name="Id" type="long" column="Id">
             <generator class="increment" />
         </id>
-         <many-to-one name="info" unique="true" cascade="all,delete-orphan"  not-found="exception">
+         <many-to-one name="Info"
+                      unique="true"
+                      cascade="all,delete-orphan" 
+                      not-found="exception">
             <column name="COMP_ID" />
             <column name="PERS_ID" />
          </many-to-one>
     </class>
 
     <class name="EmployeeInfo">
-        <composite-id class="EmployeeInfo+Id" name="id">
-            <key-property name="companyId" column="COMP_ID" />
-            <key-property name="personId" column="PERS_ID" />
+        <composite-id class="EmployeeInfo+Identifier" name="Id">
+            <key-property name="CompanyId" column="COMP_ID" />
+            <key-property name="PersonId" column="PERS_ID" />
         </composite-id>
     </class>
 

@@ -44,6 +44,9 @@ namespace NHibernate.Loader.Criteria
 
 		private readonly ICollection<IParameterSpecification> collectedParameterSpecifications;
 		private readonly ICollection<NamedParameter> namedParameters;
+		private readonly ISet<string> subQuerySpaces = new HashSet<string>();
+
+		
 
 		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
 									   string rootSQLAlias, ICriteriaQuery outerQuery)
@@ -71,6 +74,7 @@ namespace NHibernate.Loader.Criteria
 			CreateCriteriaEntityNameMap();
 			CreateCriteriaCollectionPersisters();
 			CreateCriteriaSQLAliasMap();
+			CreateSubQuerySpaces();
 		}
 
 		[CLSCompliant(false)] // TODO: Why does this cause a problem in 1.1
@@ -92,6 +96,9 @@ namespace NHibernate.Loader.Criteria
 			{
 				result.UnionWith(collectionPersister.CollectionSpaces);
 			}
+
+			result.UnionWith(subQuerySpaces);
+
 			return result;
 		}
 
@@ -179,12 +186,7 @@ namespace NHibernate.Loader.Criteria
 
 		public string[] ProjectedColumnAliases
 		{
-			get
-			{
-				return rootCriteria.Projection is IEnhancedProjection
-					? ((IEnhancedProjection)rootCriteria.Projection).GetColumnAliases(0, rootCriteria, this)
-					: rootCriteria.Projection.GetColumnAliases(0);
-			}
+			get { return rootCriteria.Projection.GetColumnAliases(0, rootCriteria, this); }
 		}
 
 		public string[] ProjectedAliases
@@ -815,7 +817,10 @@ namespace NHibernate.Loader.Criteria
 		{
 			//first look for a reference to a projection alias
 			IProjection projection = rootCriteria.Projection;
-			string[] projectionColumns = projection == null ? null : projection.GetColumnAliases(propertyName, 0);
+			string[] projectionColumns = null;
+
+			if (projection != null)
+				projectionColumns = projection.GetColumnAliases(propertyName, 0, subcriteria, this);
 
 			if (projectionColumns == null)
 			{
@@ -846,5 +851,24 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		#endregion
+		
+		private void CreateSubQuerySpaces()
+		{
+
+			var subQueries =
+				rootCriteria.IterateExpressionEntries()
+				            .Select(x => x.Criterion)
+				            .OfType<SubqueryExpression>()
+				            .Select(x => x.Criteria)
+				            .OfType<CriteriaImpl>();
+
+			foreach (var criteriaImpl in subQueries)
+			{
+				//The RootSqlAlias is not relevant, since we're only retreiving the query spaces
+				var translator = new CriteriaQueryTranslator(sessionFactory, criteriaImpl, criteriaImpl.EntityOrClassName, RootSqlAlias);
+				subQuerySpaces.UnionWith(translator.GetQuerySpaces());
+			}
+
+		}	
 	}
 }

@@ -86,7 +86,7 @@ namespace NHibernate.Impl
 
 
 			/// <summary>
-			/// Retreive the property name from a supplied PropertyProjection
+			/// Retrieve the property name from a supplied PropertyProjection
 			/// Note:  throws is the supplied IProjection is not a PropertyProjection
 			/// </summary>
 			public string AsProperty()
@@ -200,6 +200,11 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(int)), ProjectionsExtensions.ProcessIntAbs);
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(double)), ProjectionsExtensions.ProcessDoubleAbs);
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(Int64)), ProjectionsExtensions.ProcessInt64Abs);
+
+			RegisterCustomProjection(() => Math.Round(default(double)), ProjectionsExtensions.ProcessRound);
+			RegisterCustomProjection(() => Math.Round(default(decimal)), ProjectionsExtensions.ProcessRound);
+			RegisterCustomProjection(() => Math.Round(default(double), default(int)), ProjectionsExtensions.ProcessRound);
+			RegisterCustomProjection(() => Math.Round(default(decimal), default(int)), ProjectionsExtensions.ProcessRound);
 		}
 
 		private static ICriterion Eq(ProjectionInfo property, object value)
@@ -360,7 +365,7 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Retrieves a detached criteria from an appropriate lambda expression
 		/// </summary>
-		/// <param name="expression">Expresson for detached criteria using .As&lt;>() extension"/></param>
+		/// <param name="expression">Expression for detached criteria using .As&lt;>() extension"/></param>
 		/// <returns>Evaluated detached criteria</returns>
 		public static DetachedCriteria FindDetachedCriteria(Expression expression)
 		{

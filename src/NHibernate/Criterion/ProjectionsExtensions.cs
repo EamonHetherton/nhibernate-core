@@ -25,7 +25,7 @@ namespace NHibernate.Criterion
 		/// Project SQL function year()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
-		[Obsolete("Pleae use DateTime.Year property instead")]
+        [Obsolete("Please use DateTime.Year property instead")]
 		public static int YearPart(this DateTime dateTimeProperty)
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
@@ -244,6 +244,20 @@ namespace NHibernate.Criterion
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
 			return Projections.SqlFunction("abs", NHibernateUtil.Int64, property);
 		}
+
+
+		internal static IProjection ProcessRound(MethodCallExpression methodCallExpression)
+		{
+			IProjection innerProjection =
+				ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
+
+			IProjection digitsProjection = Projections.Constant(0);
+			if (methodCallExpression.Arguments.Count > 1)
+				digitsProjection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[1]).AsProjection();
+
+			return Projections.SqlFunction("round", NHibernateUtil.Double, innerProjection, digitsProjection);
+		}
+
 
 		/// <summary>
 		/// Project SQL function abs()

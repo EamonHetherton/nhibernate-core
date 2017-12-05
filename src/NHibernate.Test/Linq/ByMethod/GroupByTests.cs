@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -143,28 +144,72 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-		[Test, KnownBug("NH-????"), Description("Discovered as part of NH-2560")]
+		[Test]
 		public void SingleKeyPropertyGroupWithOrderByCount()
 		{
-			var result = db.Orders
-				.GroupBy(o => o.Customer)
-				.OrderByDescending(g => g.Count()) // it seems like there we should do order on client-side
-				.Select(g => g.Key)
-				.ToList();
+			// The problem with this test (as of 2014-07-25) is that the generated SQL will
+			// try to select columns that are not included in the group-by clause. But on MySQL and
+			// sqlite, it's apparently ok.
 
-			Assert.That(result.Count, Is.EqualTo(89));
+			// The try-catch in this clause aim to ignore the test on dialects where it shouldn't work,
+			// but give us a warning if it does start to work.
+
+			try
+			{
+				var result = db.Orders
+					.GroupBy(o => o.Customer)
+					.OrderByDescending(g => g.Count()) // it seems like there we should do order on client-side
+					.Select(g => g.Key)
+					.ToList();
+
+				Assert.That(result.Count, Is.EqualTo(89));
+			}
+			catch (Exception)
+			{
+				if (Dialect is MySQLDialect || Dialect is SQLiteDialect)
+					throw;
+
+				Assert.Ignore("Known bug NH-3027, discovered as part of NH-2560.");
+			}
+
+			if (Dialect is MySQLDialect || Dialect is SQLiteDialect)
+				return;
+
+			Assert.Fail("Unexpected success in test. Maybe something was fixed and the test needs to be updated?");
 		}
 
-		[Test, KnownBug("NH-3027")]
+		[Test]
 		public void SingleKeyPropertyGroupByEntityAndSelectEntity()
 		{
-			var orderCounts = db.Orders
-				.GroupBy(o => o.Customer)
-				.Select(g => new { Customer = g.Key, OrderCount = g.Count() })
-				.OrderByDescending(t => t.OrderCount)
-				.ToList();
+			// The problem with this test (as of 2014-07-25) is that the generated SQL will
+			// try to select columns that are not included in the group-by clause. But on MySQL and
+			// sqlite, it's apparently ok.
 
-			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
+			// The try-catch in this clause aim to ignore the test on dialects where it shouldn't work,
+			// but give us a warning if it does start to work.
+
+			try
+			{
+				var orderCounts = db.Orders
+					.GroupBy(o => o.Customer)
+					.Select(g => new {Customer = g.Key, OrderCount = g.Count()})
+					.OrderByDescending(t => t.OrderCount)
+					.ToList();
+
+				AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
+			}
+			catch (Exception)
+			{
+				if (Dialect is MySQLDialect || Dialect is SQLiteDialect)
+					throw;
+
+				Assert.Ignore("Known bug NH-3027, discovered as part of NH-2560.");
+			}
+
+			if (Dialect is MySQLDialect || Dialect is SQLiteDialect)
+				return;
+
+			Assert.Fail("Unexpected success in test. Maybe something was fixed and the test needs to be updated?");
 		}
 
 		[Test]
@@ -240,19 +285,19 @@ namespace NHibernate.Test.Linq.ByMethod
 						group o by o.OrderDate
 						into g
 						select new
-								   {
-									   g.Key,
-									   Count = g.SelectMany(x => x.OrderLines).Count()
-								   }).ToList();
+									{
+										g.Key,
+										Count = g.SelectMany(x => x.OrderLines).Count()
+									}).ToList();
 
 			var query = (from o in db.Orders
 						group o by o.OrderDate
 						into g
 						select new
-								   {
-									   g.Key,
-									   Count = g.SelectMany(x => x.OrderLines).Count()
-								   }).ToList();
+									{
+										g.Key,
+										Count = g.SelectMany(x => x.OrderLines).Count()
+									}).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(481));
 			Assert.That(query, Is.EquivalentTo(list));
@@ -288,9 +333,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2566
 			var results = (from o in db.Orders
-			               group o by o.Customer
-			               into g
-			               select g.Key.CustomerId)
+								group o by o.Customer
+								into g
+								select g.Key.CustomerId)
 				.OrderBy(customerId => customerId)
 				.Skip(10)
 				.Take(10)
@@ -371,6 +416,108 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void ProjectingCountWithPredicate()
+		{
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Select(x => new { x.Key, Count = x.Count(y => y.UnitPrice == 9.50M) })
+				.OrderByDescending(x => x.Key)
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void FilteredByCountWithPredicate()
+		{
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Where(x => x.Count(y => y.UnitPrice == 12.75M) == 1)
+				.Select(x => new { x.Key, Count = x.Count() })
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void FilteredByCountFromSubQuery()
+		{
+			//Not really an aggregate filter, but included to ensure that this kind of query still works
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Where(x => db.Products.Count(y => y.Supplier.CompanyName==x.Key && y.UnitPrice == 12.75M) == 1)
+				.Select(x => new { x.Key, Count = x.Count() })
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void FilteredByAndProjectingSumWithPredicate()
+		{
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Where(x => x.Sum(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M) == 12.75M)
+				.Select(x => new { x.Key, Sum = x.Sum(y => y.UnitPrice) })
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Sum, Is.EqualTo(12.75M + 9.50M));
+		}
+
+		[Test]
+		public void FilteredByKeyAndProjectedWithAggregatePredicates()
+		{
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Where(x => x.Key == "Zaanse Snoepfabriek")
+				.Select(x => new { x.Key, 
+					Sum = x.Sum(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
+					Avg = x.Average(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
+					Count = x.Count(y => y.UnitPrice == 12.75M),
+					Max = x.Max(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
+					Min = x.Min(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M)
+				})
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Sum, Is.EqualTo(12.75M));
+			Assert.That(result.Count, Is.EqualTo(1));
+			Assert.That(result.Avg, Is.EqualTo(12.75M/2));
+			Assert.That(result.Max, Is.EqualTo(12.75M));
+			Assert.That(result.Min, Is.EqualTo(0M));
+		}
+
+		[Test]
+		public void ProjectingWithSubQueriesFilteredByTheAggregateKey()
+		{
+			var result=db.Products.GroupBy(x => x.Supplier.Address.Country)
+			 .OrderBy(x=>x.Key)
+			 .Select(x => new { x.Key, MaxFreight = db.Orders.Where(y => y.ShippingAddress.Country == x.Key).Max(y => y.Freight), FirstOrder = db.Orders.Where(o => o.Employee.FirstName.StartsWith("A")).OrderBy(o => o.OrderId).Select(y => y.OrderId).First() })
+			 .ToList();
+
+			Assert.That(result.Count,Is.EqualTo(16));
+			Assert.That(result[15].MaxFreight, Is.EqualTo(830.75M));
+			Assert.That(result[15].FirstOrder, Is.EqualTo(10255));
+		}
+
+		[Test(Description = "NH-3681"), KnownBug("NH-3681 not yet fixed", "NHibernate.HibernateException")]
+		public void SelectManyGroupByAggregateProjection()
+		{
+			var result = (from o in db.Orders
+			              from ol in o.OrderLines
+			              group ol by ol.Product.ProductId
+			              into grp
+			              select new {ProductId = grp.Key, Sum = grp.Sum(x => x.UnitPrice)}
+				).ToList();
+
+			Assert.That(result.Count, Is.EqualTo(77));
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
@@ -455,6 +602,25 @@ namespace NHibernate.Test.Linq.ByMethod
 			{
 				return Item1.GetHashCode() ^ Item2.GetHashCode();
 			}
+		}
+
+
+		[Test(Description = "NH-3446"), KnownBug("NH-3446", "NHibernate.HibernateException")]
+		public void GroupByOrderByKeySelectToClass()
+		{
+			db.Products.GroupBy(x => x.Supplier.CompanyName)
+				.OrderBy(x => x.Key)
+				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
+				.ToList();
+		}
+
+
+		private class GroupInfo
+		{
+			public object Key { get; set; }
+			public int ItemCount { get; set; }
+			public bool HasSubgroups { get; set; }
+			public IEnumerable Items { get; set; }
 		}
 	}
 }

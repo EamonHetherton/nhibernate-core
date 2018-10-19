@@ -189,6 +189,7 @@ namespace NHibernate.Tool.hbm2ddl
 							await (stmt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 						}
 					}
+
 					catch (OperationCanceledException) { throw; }
 					catch (Exception e)
 					{
@@ -199,6 +200,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				log.Info("schema update complete");
 			}
+
 			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
@@ -215,6 +217,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 					connectionHelper.Release();
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					exceptions.Add(e);

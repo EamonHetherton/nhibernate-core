@@ -87,7 +87,7 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				select new {p.Name, Availability = p.UnitsInStock - p.UnitsOnOrder < 0 ? "Out Of Stock" : "In Stock"};
 
-			await (ObjectDumper.WriteAsync(q, 1));
+			return ObjectDumper.WriteAsync(q, 1);
 		}
 
 		[Category("SELECT/DISTINCT")]
@@ -98,7 +98,7 @@ namespace NHibernate.Test.Linq
 				from e in db.Employees
 				select new Name {FirstName = e.FirstName, LastName = e.LastName};
 
-			await (ObjectDumper.WriteAsync(q, 1));
+			return ObjectDumper.WriteAsync(q, 1);
 		}
 
 		[Category("SELECT/DISTINCT")]
@@ -111,7 +111,7 @@ namespace NHibernate.Test.Linq
 				where c.Address.City == "London"
 				select c.ContactName;
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("SELECT/DISTINCT")]
@@ -279,7 +279,7 @@ namespace NHibernate.Test.Linq
 							   FreeShippingDiscount = o.Freight
 						   };
 
-			await (ObjectDumper.WriteAsync(q, 1));
+			return ObjectDumper.WriteAsync(q, 1);
 		}
 
 		[Category("SELECT/DISTINCT")]
@@ -304,7 +304,7 @@ namespace NHibernate.Test.Linq
 							   FreeShippingDiscount = o.Freight
 						   };
 
-			await (ObjectDumper.WriteAsync(q, 1));
+			return ObjectDumper.WriteAsync(q, 1);
 		}
 
 		[Category("SELECT/DISTINCT")]
@@ -512,7 +512,7 @@ namespace NHibernate.Test.Linq
 				orderby e.HireDate
 				select e;
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("ORDER BY")]
@@ -526,7 +526,7 @@ namespace NHibernate.Test.Linq
 				orderby o.Freight
 				select o;
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("ORDER BY")]
@@ -539,7 +539,7 @@ namespace NHibernate.Test.Linq
 				orderby p.UnitPrice descending
 				select p;
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("ORDER BY")]
@@ -552,7 +552,7 @@ namespace NHibernate.Test.Linq
 				orderby c.Address.City , c.ContactName
 				select c;
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("ORDER BY")]
@@ -566,7 +566,7 @@ namespace NHibernate.Test.Linq
 				orderby o.ShippingAddress.Country , o.Freight descending
 				select o;
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 
@@ -802,7 +802,7 @@ namespace NHibernate.Test.Linq
 				into g
 					select g;
 
-			await (ObjectDumper.WriteAsync(categories, 1));
+			return ObjectDumper.WriteAsync(categories, 1);
 		}
 
 		[Category("EXISTS/IN/ANY/ALL")]
@@ -1121,7 +1121,7 @@ namespace NHibernate.Test.Linq
 				where c.Address.City == "London"
 				select o;
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1150,7 +1150,7 @@ namespace NHibernate.Test.Linq
 				where c.Address.City == "London"
 				select new {o.OrderDate, o.ShippingAddress.Region};
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1165,7 +1165,7 @@ namespace NHibernate.Test.Linq
 				where c.Address.City == "London"
 				select new {c.Address.City, o.OrderDate, o.ShippingAddress.Region};
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1227,7 +1227,7 @@ namespace NHibernate.Test.Linq
 				where p.Supplier.Address.Country == "USA" && p.UnitsInStock == 0
 				select p;
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1243,7 +1243,7 @@ namespace NHibernate.Test.Linq
 				where e.Address.City == "Seattle"
 				select new {e.FirstName, e.LastName, et.Region.Description};
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1267,7 +1267,7 @@ namespace NHibernate.Test.Linq
 							   e1.Address.City
 						   };
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1294,7 +1294,7 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
 				select new { c.ContactName, o.OrderId };
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1319,7 +1319,7 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on new {c.CustomerId} equals new {o.Customer.CustomerId}
 				select new { c.ContactName, o.OrderId };
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1331,7 +1331,7 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
 				select new { c.ContactName, o.OrderId };
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1378,7 +1378,7 @@ namespace NHibernate.Test.Linq
 				from o in ords
 				select new {c.ContactName, o.OrderId, z};
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 
 		[Category("JOIN")]
@@ -1415,7 +1415,7 @@ namespace NHibernate.Test.Linq
 					 group o by c into x
 					 select new { CustomerName = x.Key.ContactName, Order = x };
 
-			await (ObjectDumper.WriteAsync(q));
+			return ObjectDumper.WriteAsync(q);
 		}
 	}
 }

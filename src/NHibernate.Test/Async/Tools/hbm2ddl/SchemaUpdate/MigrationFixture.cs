@@ -65,7 +65,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 			String resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.2_Version.hbm.xml";
 			String resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.1_Version.hbm.xml";
 
-			await (MigrateSchemaAsync(resource1, resource2));
+			return MigrateSchemaAsync(resource1, resource2);
 		}
 
 		[Test]
@@ -74,7 +74,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 			String resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.2_Person.hbm.xml";
 			String resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.1_Person.hbm.xml";
 
-			await (MigrateSchemaAsync(resource1, resource2));
+			return MigrateSchemaAsync(resource1, resource2);
 		}
 	}
 }

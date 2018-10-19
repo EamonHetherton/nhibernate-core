@@ -101,6 +101,7 @@ namespace NHibernate.Id.Enhanced
 						result = Convert.ToInt64(selectedValue);
 					}
 				}
+
 				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{
@@ -125,6 +126,8 @@ namespace NHibernate.Id.Enhanced
 						updatedRows = await (updateCmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
+
+
 				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{

@@ -72,6 +72,9 @@ namespace NHibernate.Id
 			{
 				return await (type.NullSafeGetAsync(rs, rs.GetName(0), session, null, cancellationToken)).ConfigureAwait(false);
 			}
+			// here is an interesting one: 
+			// - MsSql's @@identity returns a Decimal
+			// - MySql LAST_IDENITY() returns an Int64 			
 			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{

@@ -77,12 +77,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 		public async Task LinqWithListParameterPerfAsync()
 		{
 			var names = new[] { "Bob", "Sally" };
-			await (BenchmarkAsync(
+			return BenchmarkAsync(
 				"List parameter",
 				s =>
 					s
 						.Query<Entity>()
-						.Where(e => names.Contains(e.Name))));
+						.Where(e => names.Contains(e.Name)));
 		}
 
 		private async Task BenchmarkAsync<T>(string test, Func<ISession, IQueryable<T>> queryFactory, CancellationToken cancellationToken = default(CancellationToken))
@@ -158,14 +158,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 
 			protected override Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 			{
-				try
-				{
-					return Task.FromResult<DbDataReader>(_substituteReader);
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<DbDataReader>(ex);
-				}
+				return Task.FromResult<DbDataReader>(_substituteReader);
 			}
 
 			public override Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)

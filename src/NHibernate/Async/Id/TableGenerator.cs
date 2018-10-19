@@ -115,6 +115,7 @@ namespace NHibernate.Id
 
 					rows = await (ups.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 				}
+
 				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{

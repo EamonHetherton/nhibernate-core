@@ -77,6 +77,7 @@ namespace NHibernate.Id.Enhanced
 						updatedRows = await (updateCmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
+
 				catch (OperationCanceledException) { throw; }
 				catch (Exception sqle)
 				{

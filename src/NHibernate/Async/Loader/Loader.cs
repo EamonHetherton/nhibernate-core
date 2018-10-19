@@ -309,6 +309,7 @@ namespace NHibernate.Loader
 						Log.Debug("done processing result set ({0} rows)", count);
 					}
 				}
+
 				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{

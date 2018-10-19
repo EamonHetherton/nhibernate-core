@@ -109,6 +109,7 @@ namespace NHibernate.Tool.hbm2ddl
 				{
 					connectionHelper.Release();
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
 					log.Error(e, "Error closing connection");

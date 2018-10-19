@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         public async Task TestSaveAndLoadWithoutCountAsync()
         {
             ProjectWithOneList.TestAccessToList = false;
-            await (SaveAndLoadProjectWithOneListAsync());
+            return SaveAndLoadProjectWithOneListAsync();
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         public async Task TestRefreshWithoutCountAsync()
         {
             ProjectWithOneList.TestAccessToList = false;
-            await (SaveLoadAndRefreshProjectWithOneListAsync());
+            return SaveLoadAndRefreshProjectWithOneListAsync();
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         public async Task TestSaveAndLoadWithCountAsync()
         {
             ProjectWithOneList.TestAccessToList = true;
-            await (SaveAndLoadProjectWithOneListAsync());
+            return SaveAndLoadProjectWithOneListAsync();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         public async Task TestRefreshWithCountAsync()
         {
             ProjectWithOneList.TestAccessToList = true;
-            await (SaveLoadAndRefreshProjectWithOneListAsync());
+            return SaveLoadAndRefreshProjectWithOneListAsync();
         }
 
         /// <summary>

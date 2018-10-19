@@ -57,14 +57,14 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		public async Task ComponentFieldNotInsertedAsync()
 		{
 			isDynamic = false;
-			await (ComponentFieldNotInserted_GenericAsync(typeof(Parent)));
+			return ComponentFieldNotInserted_GenericAsync(typeof(Parent));
 		}
 
 		[Test]
 		public async Task ComponentFieldNotInserted_DynamicAsync()
 		{
 			isDynamic = true;
-			await (ComponentFieldNotInserted_GenericAsync(typeof(DynamicParent)));
+			return ComponentFieldNotInserted_GenericAsync(typeof(DynamicParent));
 		}
 
 		private async Task ComponentFieldNotUpdated_GenericAsync(System.Type type, CancellationToken cancellationToken = default(CancellationToken))
@@ -115,14 +115,14 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		public async Task ComponentFieldNotUpdatedAsync()
 		{
 			isDynamic = false;
-			await (ComponentFieldNotUpdated_GenericAsync(typeof(Parent)));
+			return ComponentFieldNotUpdated_GenericAsync(typeof(Parent));
 		}
 
 		[Test]
 		public async Task ComponentFieldNotUpdated_DynamicAsync()
 		{
 			isDynamic = true;
-			await (ComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent)));
+			return ComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent));
 		}
 
 		private async Task SubComponentFieldNotInserted_GenericAsync(System.Type type, CancellationToken cancellationToken = default(CancellationToken))
@@ -157,14 +157,14 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		public async Task SubComponentFieldNotInsertedAsync()
 		{
 			isDynamic = false;
-			await (SubComponentFieldNotInserted_GenericAsync(typeof(Parent)));
+			return SubComponentFieldNotInserted_GenericAsync(typeof(Parent));
 		}
 
 		[Test]
 		public async Task SubComponentFieldNotInserted_DynamicAsync()
 		{
 			isDynamic = false;
-			await (SubComponentFieldNotInserted_GenericAsync(typeof(DynamicParent)));
+			return SubComponentFieldNotInserted_GenericAsync(typeof(DynamicParent));
 		}
 
 		private async Task SubComponentFieldNotUpdated_GenericAsync(System.Type type, CancellationToken cancellationToken = default(CancellationToken))
@@ -215,14 +215,14 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		public async Task SubComponentFieldNotUpdatedAsync()
 		{
 			isDynamic = false;
-			await (SubComponentFieldNotUpdated_GenericAsync(typeof(Parent)));
+			return SubComponentFieldNotUpdated_GenericAsync(typeof(Parent));
 		}
 
 		[Test]
 		public async Task SubComponentFieldNotUpdated_DynamicAsync()
 		{
 			isDynamic = false;
-			await (SubComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent)));
+			return SubComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent));
 		}
 
 		protected override void OnTearDown()

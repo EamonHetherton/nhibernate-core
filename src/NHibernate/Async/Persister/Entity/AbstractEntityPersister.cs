@@ -523,6 +523,7 @@ namespace NHibernate.Persister.Entity
 						expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(insertCmd, cancellationToken)).ConfigureAwait(false), insertCmd);
 					}
 				}
+
 				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{
@@ -792,6 +793,7 @@ namespace NHibernate.Persister.Entity
 						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement);
 					}
 				}
+
 				catch (OperationCanceledException) { throw; }
 				catch (Exception e)
 				{

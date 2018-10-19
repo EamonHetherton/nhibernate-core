@@ -218,7 +218,7 @@ namespace NHibernate.Test.TypesTest
 		public async Task DbHasExpectedTypeAsync()
 		{
 			var validator = new SchemaValidator(cfg);
-			await (validator.ValidateAsync());
+			return validator.ValidateAsync();
 		}
 
 		[Test]

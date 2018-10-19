@@ -127,6 +127,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						{
 							session.Batcher.CloseCommand(ps, null);
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception)
 						{
 							// ignore
@@ -164,6 +165,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						{
 							stmnt.Dispose();
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception)
 						{
 							// ignore
@@ -201,6 +203,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						{
 							stmnt.Dispose();
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception)
 						{
 							// ignore

@@ -46,6 +46,7 @@ namespace NHibernate.Context
 					}
 					orphan.Close();
 				}
+
 				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{

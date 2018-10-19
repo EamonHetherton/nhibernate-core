@@ -60,6 +60,7 @@ namespace NHibernate.Driver
 
 				dataReader.results = resultList.ToArray();
 			}
+
 			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{

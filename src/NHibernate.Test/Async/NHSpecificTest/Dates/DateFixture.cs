@@ -27,8 +27,8 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		public async Task SavingAndRetrievingTestAsync()
 		{
 			DateTime Now = DateTime.Now;
-			await (SavingAndRetrievingActionAsync(new AllDates {Sql_date = Now},
-			                          entity => DateTimeAssert.AreEqual(entity.Sql_date, Now, true)));
+			return SavingAndRetrievingActionAsync(new AllDates {Sql_date = Now},
+			                          entity => DateTimeAssert.AreEqual(entity.Sql_date, Now, true));
 		}
 	}
 }

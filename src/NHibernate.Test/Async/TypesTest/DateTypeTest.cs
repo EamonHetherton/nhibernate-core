@@ -41,7 +41,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			var expected = DateTime.Today;
 
-			await (ReadWriteAsync(expected));
+			return ReadWriteAsync(expected);
 		}
 
 		[Test]
@@ -49,7 +49,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			var expected = Sfi.ConnectionProvider.Driver.MinDate;
 
-			await (ReadWriteAsync(expected));
+			return ReadWriteAsync(expected);
 		}
 
 		[Test]
